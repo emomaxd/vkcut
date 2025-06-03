@@ -5,13 +5,13 @@
 namespace vkcut {
 
     struct Ray {
-        vec3 origin;
-        vec3 direction;
+        Vec3 origin;
+        Vec3 direction;
    
         Ray() = default;
 
-        bool intersect_triangle(const vec3& v0, const vec3& v1, const vec3& v2, float& t) const;
+        bool intersect_triangle(const Vec3& v0, const Vec3& v1, const Vec3& v2, float& t) const;
 
-        bool intersect_sphere(const vec3& center, float radius, float& t) const;
-    }
+        bool intersect_sphere(const Vec3& center, float radius, float& t) const;
+    };
 } // namespace vkcut

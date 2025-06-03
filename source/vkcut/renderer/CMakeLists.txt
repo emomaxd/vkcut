@@ -1,13 +1,10 @@
 set(CMAKE_CXX_STANDARD 23)
 
 set(INC
-    .
 )
 
 set(LIB
     X11
-
-    engine
 )
 
 set(SRC

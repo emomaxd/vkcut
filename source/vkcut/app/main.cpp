@@ -1,7 +1,13 @@
 #include <X11/Xlib.h>
 #include <iostream>
 
+#include "engine.h"
+
 int main() {
+
+    constexpr size_t WIDTH = 800, HEIGHT = 600;
+    vkcut::Engine engine(WIDTH, HEIGHT);
+
 
     Display* display = XOpenDisplay(NULL);
     if (display == NULL) {
@@ -17,6 +23,7 @@ int main() {
 
     XEvent event;
     while (true) {
+        engine.render();
         XNextEvent(display, &event);
         if (event.xany.type == ClientMessage) {
             break;
