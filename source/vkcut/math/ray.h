@@ -1,6 +1,7 @@
 #pragma once
 
-#include "vec3.h"
+#include "math/vec3.h"
+#include "renderer/camera.h"
 
 namespace vkcut {
 
@@ -8,10 +9,10 @@ namespace vkcut {
         Vec3 origin;
         Vec3 direction;
    
-        Ray() = default;
-
         bool intersect_triangle(const Vec3& v0, const Vec3& v1, const Vec3& v2, float& t) const;
-
-        bool intersect_sphere(const Vec3& center, float radius, float& t) const;
     };
+
+
+    Ray generate_primary_ray(int x, int y, int width, int height, const Camera& cam);
+
 } // namespace vkcut

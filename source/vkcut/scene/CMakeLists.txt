@@ -2,15 +2,18 @@ set(CMAKE_CXX_STANDARD 23)
 
 set(INC
     .
+    ..
 )
 
 set(LIB
+    math
 )
 
 set(SRC
     scene.cpp
     
     scene.h
+    mesh.h
 )
 
 add_library(scene ${SRC})

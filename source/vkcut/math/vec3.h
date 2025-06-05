@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <limits>
 
 namespace vkcut {
 
@@ -9,95 +10,121 @@ class Vec3 {
 public:
     float X, Y, Z;
 
-    Vec3(float x = 0, float y = 0, float z = 0) : X(x), Y(y), Z(z) {}
-    Vec3(const Vec3& other) : X(other.X), Y(other.Y), Z(other.Z) {}
+    inline constexpr Vec3(float x = 0.0f, float y = 0.0f, float z = 0.0f) noexcept
+        : X(x), Y(y), Z(z) {}
 
-    Vec3& operator=(const Vec3& other) {
-        X = other.X; Y = other.Y; Z = other.Z;
-        return *this;
+    inline constexpr Vec3(const Vec3& other) noexcept = default;
+    inline Vec3& operator=(const Vec3& other) noexcept = default;
+
+    // Unary
+    inline constexpr Vec3 operator-() const noexcept {
+        return Vec3{-X, -Y, -Z};
     }
 
-    Vec3 operator+(const Vec3& other) const {
+    // Binary
+    inline constexpr Vec3 operator+(const Vec3& other) const noexcept {
         return Vec3{X + other.X, Y + other.Y, Z + other.Z};
     }
 
-    Vec3 operator-(const Vec3& other) const {
+    inline constexpr Vec3 operator-(const Vec3& other) const noexcept {
         return Vec3{X - other.X, Y - other.Y, Z - other.Z};
     }
 
-    Vec3 operator*(float scalar) const {
+    inline constexpr Vec3 operator*(float scalar) const noexcept {
         return Vec3{X * scalar, Y * scalar, Z * scalar};
     }
 
-    Vec3 operator/(float scalar) const {
+    inline Vec3 operator/(float scalar) const noexcept {
         float inv = 1.0f / scalar;
         return Vec3{X * inv, Y * inv, Z * inv};
     }
 
-    Vec3& operator+=(const Vec3& other) {
+    // Compound
+    inline Vec3& operator+=(const Vec3& other) noexcept {
         X += other.X; Y += other.Y; Z += other.Z;
         return *this;
     }
 
-    Vec3& operator-=(const Vec3& other) {
+    inline Vec3& operator-=(const Vec3& other) noexcept {
         X -= other.X; Y -= other.Y; Z -= other.Z;
         return *this;
     }
 
-    Vec3& operator*=(float scalar) {
+    inline Vec3& operator*=(float scalar) noexcept {
         X *= scalar; Y *= scalar; Z *= scalar;
         return *this;
     }
 
-    Vec3& operator/=(float scalar) {
+    inline Vec3& operator/=(float scalar) noexcept {
         float inv = 1.0f / scalar;
         X *= inv; Y *= inv; Z *= inv;
         return *this;
     }
 
-    bool operator==(const Vec3& other) const {
+    // Comparison
+    inline constexpr bool operator==(const Vec3& other) const noexcept {
         return X == other.X && Y == other.Y && Z == other.Z;
     }
 
-    bool operator!=(const Vec3& other) const {
+    inline constexpr bool operator!=(const Vec3& other) const noexcept {
         return !(*this == other);
     }
 
-    Vec3 operator-() const {
-        return Vec3{-X, -Y, -Z};
-    }
-
-    float length() const {
+    // Length and normalization
+    [[nodiscard]] inline float length() const noexcept {
         return std::sqrt(X * X + Y * Y + Z * Z);
     }
 
-    Vec3 normalize() const {
+    [[nodiscard]] inline Vec3 normalized() const noexcept {
         float len = length();
-        if (len <= 0) {
-            return Vec3{0};
+        if (len > std::numeric_limits<float>::epsilon()) {
+            float inv = 1.0f / len;
+            return Vec3{X * inv, Y * inv, Z * inv};
         }
-        return *this / len;
+        return Vec3{};
+    }
+
+    inline void normalize() noexcept {
+        float len = length();
+        if (len > std::numeric_limits<float>::epsilon()) {
+            float inv = 1.0f / len;
+            X *= inv; Y *= inv; Z *= inv;
+        }
     }
 };
 
-inline Vec3 operator*(float scalar, const Vec3& v) {
-    return v * scalar;
-}
+// Free operators
 
-inline Vec3 operator/(float scalar, const Vec3& v) {
-    return Vec3{scalar / v.X, scalar / v.Y, scalar / v.Z};
-}
+    inline constexpr Vec3 operator*(float scalar, const Vec3& v) noexcept {
+        return v * scalar;
+    }
 
-inline float dot(const Vec3& a, const Vec3& b) {
-    return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
-}
+    // Caution: this is mathematically ambiguous; rarely used.
+    inline Vec3 operator/(float scalar, const Vec3& v) noexcept {
+        return Vec3{scalar / v.X, scalar / v.Y, scalar / v.Z};
+    }
 
-inline Vec3 cross(const Vec3& a, const Vec3& b) {
-    return Vec3{
-        a.Y * b.Z - a.Z * b.Y,
-        a.Z * b.X - a.X * b.Z,
-        a.X * b.Y - a.Y * b.X
-    };
-}
+    // Dot product
+    inline constexpr float dot(const Vec3& a, const Vec3& b) noexcept {
+        return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
+    }
 
+    // Cross product
+    inline constexpr Vec3 cross(const Vec3& a, const Vec3& b) noexcept {
+        return Vec3{
+            a.Y * b.Z - a.Z * b.Y,
+            a.Z * b.X - a.X * b.Z,
+            a.X * b.Y - a.Y * b.X
+        };
+    }
+
+    inline Vec3 normalize(const Vec3& v) noexcept {
+        float len = v.length();
+        if (len > std::numeric_limits<float>::epsilon()) {
+            float inv = 1.0f / len;
+            Vec3 result{v.X * inv, v.Y * inv, v.Z * inv};
+            return result;
+        }
+        return Vec3{};
+    }
 } // namespace vkcut

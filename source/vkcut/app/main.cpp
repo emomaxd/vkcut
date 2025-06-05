@@ -1,12 +1,21 @@
 #include <X11/Xlib.h>
 #include <iostream>
 
-#include "engine.h"
+#include "engine/engine.h"
+#include "scene/scene.h"
 
 int main() {
 
     constexpr size_t WIDTH = 800, HEIGHT = 600;
+    
+    const char* filename = "render.obj";
+
     vkcut::Engine engine(WIDTH, HEIGHT);
+
+    vkcut::Scene scene;
+    
+
+/* ================================================================================================================================================================================ */
 
 
     Display* display = XOpenDisplay(NULL);
@@ -23,7 +32,7 @@ int main() {
 
     XEvent event;
     while (true) {
-        engine.render();
+    //    engine.render(scene);
         XNextEvent(display, &event);
         if (event.xany.type == ClientMessage) {
             break;

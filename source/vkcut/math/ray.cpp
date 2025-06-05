@@ -2,58 +2,63 @@
 
 #include "ray.h"
 
-bool Ray::intersect_triangle(const vec3& v0, const vec3& v1, const vec3& v2, float& t) const {
-    const float EPSILON = 1e-8f;
+namespace vkcut {
 
-    vec3 e1 = v1 - v0;
-    vec3 e2 = v2 - v0;
+    bool Ray::intersect_triangle(const Vec3& v0, const Vec3& v1, const Vec3& v2, float& out_t) const {
+        constexpr float EPSILON = 1e-8f;
 
-    vec3 h = direction.cross(e2);
-    float a = e1.dot(h);
+        // Triangle edges
+        const Vec3 edge1 = v1 - v0;
+        const Vec3 edge2 = v2 - v0;
 
-    if (a > -EPSILON && a < EPSILON)
-        return false;
+        // Compute determinant
+        const Vec3 pvec = cross(direction, edge2);
+        const float det = dot(edge1, pvec);
 
-    float f = 1.0f / a;
-    vec3 s = origin - v0;
-    float u = f * s.dot(h);
+        // Ray is parallel to triangle
+        if (std::fabs(det) < EPSILON)
+            return false;
 
-    if (u < 0.0f || u > 1.0f)
-        return false;
+        const float invDet = 1.0f / det;
 
-    vec3 q = s.cross(e1);
-    float v = f * direction.dot(q);
+        // Vector from v0 to ray origin
+        const Vec3 tvec = origin - v0;
 
-    if (v < 0.0f || u + v > 1.0f)
-        return false;
+        // Compute U parameter
+        const float u = dot(tvec, pvec) * invDet;
+        if (u < 0.0f || u > 1.0f)
+            return false;
 
-    t = f * e2.dot(q);
+        // Compute V parameter
+        const Vec3 qvec = cross(tvec, edge1);
+        const float v = dot(direction, qvec) * invDet;
+        if (v < 0.0f || (u + v) > 1.0f)
+            return false;
 
-    return t > EPSILON;
-}
+        // Compute t to intersection point
+        const float t = dot(edge2, qvec) * invDet;
+        if (t < EPSILON)
+            return false;
 
-bool Ray::intersect_sphere(const vec3& center, float radius, float& t) const {
-    vec3 oc = origin - center;
-    float a = direction.dot(direction);
-    float b = 2.0f * oc.dot(direction);
-    float c = oc.dot(oc) - radius * radius;
-
-    float discriminant = b * b - 4.0f * a * c;
-
-    if (discriminant < 0.0f)
-        return false;
-
-    float sqrt_discriminant = std::sqrt(discriminant);
-    float t0 = (-b - sqrt_discriminant) / (2.0f * a);
-    float t1 = (-b + sqrt_discriminant) / (2.0f * a);
-
-    if (t0 > 0.0f) {
-        t = t0;
-    } else if (t1 > 0.0f) {
-        t = t1;
-    } else {
-        return false;
+        out_t = t;
+        return true;
     }
 
-    return true;
+    Ray generate_primary_ray(int x, int y, int width, int height, const Camera& cam) {
+        float u = (x + 0.5f) / float(width);
+        float v = (y + 0.5f) / float(height);
+
+        float ndc_x = 2.0f * u - 1.0f;
+        float ndc_y = 1.0f - 2.0f * v;
+
+        float aspect = float(width) / float(height);
+        float fov_scale = tanf(0.5f * cam.fov_rad);
+
+        float px = ndc_x * aspect * fov_scale;
+        float py = ndc_y * fov_scale;
+
+        Vec3 dir = normalize(px * cam.right + py * cam.up - cam.forward);
+
+        return Ray{ cam.position, dir };
+    }
 }

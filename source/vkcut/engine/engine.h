@@ -3,8 +3,9 @@
 #include <vector>
 #include <cstddef>
 
-#include "vec3.h"
-#include "ray.h"
+#include "math/ray.h"
+#include "scene/scene.h"
+#include "math/vec3.h"
 
 namespace vkcut {
 
@@ -13,12 +14,9 @@ namespace vkcut {
             Engine(size_t width, size_t height);
             ~Engine();
             
-            /* TODO: Take scene as parameter */
-            void render();
+            void render(const Scene& scene);
 
-            /* TODO: Take scene as second parameter */
-            Vec3 trace_ray(const Ray& ray, size_t depth);
-
+            Vec3 trace_ray(const Ray& ray, const Scene& scene, size_t depth);
 
         private:
             size_t width, height;

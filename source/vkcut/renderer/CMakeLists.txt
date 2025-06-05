@@ -1,18 +1,22 @@
 set(CMAKE_CXX_STANDARD 23)
 
 set(INC
+    .
+    ..
 )
 
 set(LIB
-    X11
 )
 
 set(SRC
-    main.cpp
+    renderer.cpp
+
+    camera.h
+    renderer.h
 )
 
-add_executable(app ${SRC})
+add_library(renderer ${SRC})
 
-target_include_directories(app PUBLIC ${INC})
+target_include_directories(renderer PUBLIC ${INC})
 
-target_link_libraries(app PRIVATE ${LIB})
+target_link_libraries(renderer PRIVATE ${LIB})

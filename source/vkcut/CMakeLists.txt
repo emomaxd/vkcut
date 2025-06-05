@@ -1,5 +1,5 @@
 add_subdirectory(app)
 add_subdirectory(engine)
-#add_subdirectory(math)
-#add_subdirectory(renderer)
+add_subdirectory(math)
+add_subdirectory(renderer)
 add_subdirectory(scene)
