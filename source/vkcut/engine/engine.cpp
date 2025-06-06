@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "engine/engine.h"
 #include "renderer/camera.h"
 
@@ -22,6 +20,9 @@ namespace vkcut {
     }
 
     void Engine::render(const Scene& scene) {
+      /* TODO: Remove if or use debug assert */  
+      if (scene.mesh_count <= 0) return;
+
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
                 Ray ray = generate_primary_ray(x, y, width, height, camera);

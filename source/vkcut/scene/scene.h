@@ -2,6 +2,7 @@
 
 #include <cstddef>
 
+#include "math/ray.h"
 #include "math/vec3.h"
 #include "scene/mesh.h"
 
@@ -23,10 +24,11 @@ namespace vkcut {
 
         ~Scene();
 
+        void add_mesh(const Mesh& mesh);
+    
     private:
         void init(size_t max_mesh_count);
         void cleanup();
-        void add_mesh(const Mesh& mesh);
     };
 
     bool scene_intersect(const Ray& ray, const Scene& scene, HitResult& hit);
