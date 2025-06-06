@@ -9,5 +9,7 @@ namespace vkcut {
         Vec3 right;
         Vec3 up;
         float fov_rad;
+
+        Camera() = default;
     };
 }
