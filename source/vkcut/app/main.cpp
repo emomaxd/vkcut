@@ -32,7 +32,7 @@ int main() {
 
     XEvent event;
     while (true) {
-    //    engine.render(scene);
+        engine.render(scene);
         XNextEvent(display, &event);
         if (event.xany.type == ClientMessage) {
             break;
